@@ -1,0 +1,236 @@
+# ircII EPIC CDROM 1.0 [StRoBe 03-Jul-98]
+# Fri Jul  3 11:11:50 EDT 1998
+
+# Command Reference
+#-------------------------------------------------------------------------
+# /NEWCD
+#   Starts the CD polling loop. Starts active mode, which lets you issue
+#   PLAY, etc. commands. You can /NEWCD while the _cd.StartLoop timer is
+#   counting down ("WAIT" shows on display) to just go right into active
+#   mode instead of waiting for the timer to complete. The timer delay is
+#   there for people who (unwisely) close the tray with /NEWCD.
+#
+# /PLAY [track]
+#   Starts playing the specified track, or just starts playing if no track
+#   is specified.
+#
+# /STOP
+#   Stops the CD.
+#
+# /EJECT
+#   Ejects the CD. Use this instead of the eject button on your CDROM
+#   drive, or the polling will keep closing the tray, and you'll be
+#   playing tug-of-war with your drive. That and you'll get a ton of
+#   zombie EXECs. :P
+#
+# /HALT
+#   Pauses the CD. Couldn't use /pause for obvious reasons. This also
+#   resumes after a /HALT.
+#
+# /NEXT
+#   Plays whatever track is after the current one.
+#
+# /PREV
+#   Plays whatever track is before the current one.
+#   (I bet you saw that one coming ;>)
+#
+# /TOP
+#   Plays from the top of the current track.
+#
+# /VOL [number]
+#   Sets the CD volume to the specified number. Ranges from 0-255.
+#
+# /LOUD
+#   Volume goes loud. Need I say more?
+#
+# /QUIET
+#   Volume goes quiet. This command sucks.
+
+
+# Configuration. (yay!)
+
+#-------------------------------------------------------------------------
+# Where in the UNIXverse can I find Mark Buckaway's CDplayer 2.0?
+#
+# This script was modeled around Mark Buckaway's CDplayer 2.0 with tkcd
+# support. Supply the exact path to said program below. If you don't have
+# it, get it. If you can't get it, tough cookies.
+#
+@_cd.Application=[/usr/local/bin/cdplayer]
+
+#-------------------------------------------------------------------------
+# Where is your cdrom drive located?
+#
+# If you don't have a symlink from /dev/cdrom to your actual cdrom device,
+# then I'd suggest you change this.
+#
+@_cd.Device=[/dev/cdrom]
+
+#-------------------------------------------------------------------------
+# How many seconds should I wait before polling the CDROM status again?
+#
+# I prefer doing updates every second, but then again I'm a CPU hog. If
+# you get a ton of zombie EXEC's, raise this number. If you try to set
+# this to 0, you'd better be running a Cray Supercomputer.
+#
+@_cd.UpdateRate=[1]
+
+#-------------------------------------------------------------------------
+# Start up in active or passive mode?
+#
+# If this is set to 0, the script won't start polling for the cdrom's
+# status when you start up, and you'll need to use /NEWCD to wake it up.
+# If your tray is open and this isn't set to 0, your tray will close when
+# you start irc. You'll also probably end up with a few zombie EXECs.
+#
+@_cd.ActiveMode=[0]
+
+#-------------------------------------------------------------------------
+# How many seconds after a /NEWCD is issued should I wait before starting
+# the polling loop?
+#
+# If you get a ton of zombie EXECs, I'd suggest raising this number a bit.
+# You can probably set this to 1 or 2 if you get into the practice of
+# closing your CD tray before issuing /NEWCD.
+#
+@_cd.StartLoop=[10]
+
+#-------------------------------------------------------------------------
+# What should the volumes for /QUIET and /LOUD be?
+#
+# Volumes range from 0 (silent) to 255 (loud).
+#
+@_cd.QuietVolume=[30]
+@_cd.LoudVolume=[235]
+
+#-------------------------------------------------------------------------
+# STATUS_FORMAT stuff...
+#
+# This will auto-magically detect if you have DoRq running (or not) and
+# set the status_format accordingly. If you want to rip this for your
+# own script, just stick %Y somewhere in your status_format.
+#
+if ([$bvr]!=[]) {set status_format %Z%T %*%@%N%#%S%Q%A%C%+%I%O%M%F%H%B%K %W%>%Y }
+{set status_format %T [%R] %*%=%@%N%#%S%H%B%Q%A%C%+%I%O%M%F%L %D %W %>%Y }
+eval set status_format2 $status_format
+
+
+#-------------------------------------------------------------------------
+# Move along.. Nothing to see here. ;>
+#
+alias _cd.ActiveExec if ([$_cd.ActiveMode]) {_cd.DoExec $0-}
+alias _cd.DoExec {@_cd.ProcCount++
+exec -name _CDROM_$_cd.ProcCount $_cd.Application tkcd device $_cd.Device $0-}
+on ^exec_error "_CDROM_*" #
+on ^exec_exit "_CDROM_*" #
+on ^exec "_CDROM_*" #
+on ^exec "_CDROM_* PLAY;OK;*" {@_cd.CurrentTrack=after(; $after(; $1))}
+on ^exec "_CDROM_* STATUS;*" {_cd.isl $sar(g/;/ /$1)}
+on ^exec "_CDROM_* RESUME;NOPAUSE" {_cd.ActiveExec pause}
+on ^exec "_CDROM_* ERROR" {^assign -_cd.ActiveMode
+_cd.ResetVars}
+alias _cd.UpdateBar {_cd.db.CheckSBar
+_cd.ActiveExec status
+^timer $_cd.UpdateRate _cd.UpdateBar}
+alias _cd.isl {@_cd.pt=_cd.TicTime($4)
+@_cd.Track=[$2]
+@_cd.CurrentTrack=right(2 00$2)
+@_cd.Status=left(4 $1)
+if ([$_cd.Status]==[NONE]) {@_cd.Status=[STOP]}
+if ([$_cd.db.IncomingFD]) {@_cd.db.ConnState=[*]} {@_cd.db.ConnState=[ ]}
+^set status_user2 |$_cd.db.ConnState$[4]_cd.Status $[-2]_cd.CurrentTrack $_cd.pt | }
+alias _cd.TicTime {@_cd.TicTime.X=([$0] / [75])
+@_cd.TicTime.Minute=([$_cd.TicTime.X] / [60])
+@_cd.TicTime.Second=([$_cd.TicTime.X] - ([$_cd.TicTime.Minute] * [60]))
+^assign FUNCTION_RETURN $right(2 0$_cd.TicTime.Minute)\:$right(2 0$_cd.TicTime.Second)}
+alias _cd.ResetVars _cd.isl a DEAD 0 0 0
+alias newcd if ([$_cd.NewCD]) {^assign -_cd.NewCD
+^assign _cd.ActiveMode 1} {_cd.DoExec status
+timer 1 _cd.isl a WAIT 0 0 0
+timer $_cd.StartLoop {^assign _cd.ActiveMode 1;^assign -_cd.NewCD;_cd.db.GetQuery}
+^assign _cd.NewCD 1}
+alias play if ([$0]) {_cd.ActiveExec play $0} {_cd.ActiveExec play $_cd.Track}
+alias stop _cd.ActiveExec stop
+alias eject {^assign -_cd.ActiveMode
+_cd.db.DumpEntries
+^timer 2 _cd.DoExec play eject;_cd.ResetVars}
+alias halt _cd.ActiveExec resume
+alias next play ${_cd.Track + 1}
+alias prev play ${_cd.Track - 1}
+alias top play $_cd.Track
+alias vol _cd.DoExec volume $0
+alias loud vol $_cd.LoudVolume
+alias quiet vol $_cd.QuietVolume
+_cd.ResetVars
+_cd.UpdateBar
+
+
+#-------------------------------------------------------------------------
+# CDDB interaction code follows...
+#
+@_cd.db.Application=[/usr/local/bin/cddbid]
+@_cd.db.Server=[cddb.cddb.com]
+@_cd.db.Port=[888]
+@_cd.db.BarState=[1]
+@_cd.Swap.sf=[$STATUS_FORMAT]
+@_cd.Swap.sf1=[$STATUS_FORMAT1]
+@_cd.Swap.sf2=[$STATUS_FORMAT2]
+bind META1-c parse_command @_cd.db.BarState=[${!_cd.db.BarState}]
+alias _cd.db.CheckSBar {if ([$_cd.db.BarState]==[1]) {^set STATUS_USER4 $[${word(0 $geom()) - 2}]_cd.db.Disc
+^set STATUS_USER5 $[${word(0 $geom()) - 20}]_cd.db.Track[$_cd.Track]
+if ([$_cd.Status]==[PLAY]) {^set STATUS_FORMAT %Z %5 %>%Y
+^set STATUS_FORMAT1 %Z %4 %>
+^eval set STATUS_FORMAT2 $status_format} {_cd.db.RestoreBar}} {_cd.db.RestoreBar}}
+alias _cd.db.RestoreBar {^set STATUS_FORMAT $_cd.Swap.sf
+^set STATUS_FORMAT1 $_cd.Swap.sf1
+^set STATUS_FORMAT2 $_cd.Swap.sf2}
+on ^exec "_CDDB_ CDDB_QUERY *" {_cd.db.Query $1-}
+on ^exec "_CDDB_ CDDB_ERROR" {qq Unable to read CD.}
+on ^dcc_raw '$_cd.db.IncomingFD $_cd.db.Server D *' {_cd.db.ParseLines $3 $4 $5 $6 $7 $8 $9 $10 $11 $12 $13 $14 $15 $16 $17 $18 $19 $20 $21 $22 $23 $24 $25}
+on ^dcc_raw '$_cd.db.IncomingFD $_cd.db.Server C' {^assign -_cd.db.IncomingFD}
+alias _cd.db.OutToSock {//dcc raw $_cd.db.IncomingFD $_cd.db.Server $*}
+alias _cd.db.GetQuery {exec -name _CDDB_ $_cd.db.Application $_cd.Device}
+alias _cd.db.Query {@_cd.db.ToQuery=[$1-]
+@_cd.db.QueryTracks=[$2]
+if ([!$_cd.db.IncomingFD]) {_cd.db.DumpEntries
+@_cd.db.IncomingFD=connect($_cd.db.Server $_cd.db.Port)
+@_cd.db.Context=[Connect]} {//dcc close raw $_cd.db.IncomingFD}}
+alias _cd.db.ParseLines {switch ([$_cd.db.Context]) {([Connect]) {_cd.db.Act.Connect $*}
+([Handshake]) {_cd.db.Act.Handshake $*}
+([Query]) {_cd.db.Act.Query $*}
+([Query.ReadEntry]) {_cd.db.Act.QueryReadEntry $*}}}
+alias _cd.db.Act.Connect {switch ([$0]) {([20?]) {_cd.db.Act.Connect.20x}
+([43?]) {_cd.db.Act.Connect.40x $*}}}
+alias _cd.db.Act.Connect.20x {@_cd.db.Context=[Handshake]
+_cd.db.OutToSock CDDB HELLO $before(@ $X) $after(@ $X) ircII_EPIC_CDROM 1.0}
+alias _cd.db.Act.Connect.43x {echo ALERT: $*}
+alias _cd.db.Act.Handshake {switch ([$0]) {([200]) {_cd.db.Act.Handshake.200 $*}
+([431]) {_cd.db.Act.Handshake.431 $*}}}
+alias _cd.db.Act.Handshake.200 {@_cd.db.Context=[Query]
+_cd.db.OutToSock CDDB QUERY $_cd.db.ToQuery}
+alias _cd.db.Act.Handshake.431 {echo ALERT: $*}
+alias _cd.db.Act.Query {switch ([$0]) {([200]) {_cd.db.Act.Query.200 $*}
+([202]) {_cd.db.Act.Query.202}
+([211]) {_cd.db.Act.Query.202}}}
+alias _cd.db.Act.Query.200 {@_cd.db.Context=[Query.ReadEntry]
+_cd.db.OutToSock CDDB READ $1 $2}
+alias _cd.db.Act.Query.202 {^local i
+@_cd.db.Disc=[Compact Disc]
+@_cd.db.Tracks=[$_cd.db.QueryTracks]
+for (@i=0, i<_cd.db.QueryTracks, @i++) {@_cd.db.Track[${i + 1}]=[Track ${i + 1}]}
+_cd.db.EndOfEntry}
+alias _cd.db.Act.QueryReadEntry {switch ([$left(6 $0)]) {([DTITLE]) {@_cd.db.Disc=[$after(= $*)]}
+([TTITLE]) {@_cd.db.Track[${after(E $before(= $0)) + 1}]=[$after(= $*)]
+@_cd.db.Tracks=[${after(E $before(= $0)) + 1}]}
+([.]) {_cd.db.EndOfEntry}}}
+alias _cd.db.EndOfEntry {^assign -_cd.db.Context
+_cd.db.OutToSock QUIT}
+alias _cd.db.DumpEntries {^local i
+if ([$_cd.db.Tracks]) {for (@i=0, i<_cd.db.Tracks, @i++) {^assign -_cd.db.Track[${i + 1}]}}
+^assign -_cd.db.Disc
+^assign -_cd.db.Tracks}
+alias _cd.db.ShowCD {^local i,j
+if ([$_cd.db.Track.1]) {qq Disc: $[${word(0 $geom()) - 15}]_cd.db.Disc 
+for (@i=0, i<_cd.db.Tracks, @i++) {if ([${i + 1}]==[$_cd.Track]) {@j=[$GRN]} {@j=[$RED]}
+qq \($j$[-2]{i + 1}${RST}\) $_cd.db.Track[${i + 1}]}} {qq No track info available.}}
+alias tracks {_cd.db.ShowCD}

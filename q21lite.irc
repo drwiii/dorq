@@ -1,0 +1,1269 @@
+### ircII DoRq 2.1 Lite
+#
+# This is a stripped version of DoRq 2.1 for use on standard 2.8.2 clients.
+# It's basically 2.1 without all that cool masklist junk that crashes the
+# standard 2.8.2 client. I only had the time to give this a quick run-thru,
+# so if you notice anything out-of-the-ordinary, email me. - douglas@min.net
+#
+^set NOVICE OFF
+^set EXEC_PROTECTION OFF
+@_ini=time()
+alias qq if ([$0]) {//^xecho -level crap $qp $*}
+alias qp {//^xecho -level crap $*}
+@qp=[/*/]
+alias _spl {if ([$splash]==[ON]) {qp
+qp             oooooooooo.                ooooooooo.
+qp             `888'   `Y8b    .oooooo.   `888   `Y88.   .oooooo.
+qp              888      888  d8P'  `Y8b   888   .d88'  d8P'  `Y8b
+qp              888      888 888      888  888ooo88P'  888      888
+qp              888      888 888      888  888`88b.    888     .888
+qp              888     d88' `88b    d88'  888  `88b.  `88b   `888b
+qp             o888bood8P'    `Y8bood8P'  o888o  o888o  `Y8bood8P'Yb
+qp
+qp                          StRoBe's ircII DoRq 2.1 Lite
+qp
+qq Help is available via the /QH command.
+_qvr $qvr}}
+assign avr ircII DoRq 2.1 Lite [StRoBe 13-Jun-97]
+assign bvr ircII DoRq 2.1 Lite
+assign qbvr Fri Jun 13 06:44:21 EDT 1997
+eval assign sver $avr
+assign pingmsg You know, you could put somebody's eye out with that thing...
+assign pk !!!
+assign cflms Channel Flood
+assign nflms Nick Flood
+assign igtypes MSGS CTCP NOTICES INVITES
+assign idms Auto set-away.
+assign signmsg Leaving
+assign usermode +
+assign fchr ** ** ** ** ** *;* ** ** *$$* ** **
+assign bpt *haha* *hehe* *split* *lame* *~* *=*
+assign idletime 15
+assign dfbt n
+assign bandef Normal
+assign mesi ON
+assign flp ON
+assign chanp OFF
+assign prot OFF
+assign rejoin ON
+assign dissolve ON
+assign savepriv ON
+assign showmotd OFF
+assign splash ON
+assign doctcps ON
+assign anncaway ON
+assign anncback ON
+assign backmsg is back.
+assign privbeep ON
+assign autolag ON
+assign awaystat ON
+assign logirc OFF
+assign iaw NO
+assign esound OFF
+assign csound OFF
+assign ownadd nick!user@host
+assign dd ********************
+eval @dorqfile=[$HOME/.dorq]
+eval @dorqbak=[$HOME/.dorq.bak]
+eval @awayfle=[awaymsgs.txt]
+eval ^set logfile $W/irclog.txt
+@rstct=15
+@sbrun=1
+@ig_count=2
+@msg_fc=7
+@notice_fc=12
+@ctcp_fc=2
+@nick_fc=5
+@m_fc=2
+@k_fc=3
+@mcount=0
+@kcount=0
+@nickcnt=0
+@aliasprv=0
+@msgmax=12
+@verto=5
+@lc_max=5
+@sc_max=3
+set status_format %T %*%@%N%#%S%H%B%Q%A%C%+%I%O%M%F %W%>%U 
+set AUTO_REJOIN OFF
+set AUTO_UNMARK_AWAY OFF
+set AUTO_WHOWAS OFF
+set BEEP ON
+set BEEP_MAX 2
+set BEEP_ON_MSG NONE
+set BEEP_WHEN_AWAY 0
+set BOLD_VIDEO ON
+set CHANNEL_NAME_WIDTH 15
+set CLOCK ON
+set CLOCK_24HOUR OFF
+set COMMAND_MODE OFF
+set CONTINUED_LINE  
+set DCC_BLOCK_SIZE 4096
+set DISPLAY ON
+set FLOOD_WARNING OFF
+set FULL_STATUS_LINE ON
+set HELP_WINDOW OFF
+set HIDE_PRIVATE_CHANNELS OFF
+set HIGHLIGHT_CHAR BOLD
+set HISTORY 30
+set HOLD_MODE OFF
+set INDENT ON
+set INPUT_PROTECTION ON
+set INSERT_MODE ON
+set INVERSE_VIDEO ON
+set LASTLOG 1000
+set LASTLOG_LEVEL ALL DCC
+set LOG OFF
+eval ^if ([$MAIL]==[0]) {^set mail 1}
+set MAX_RECURSIONS 200
+set NO_CTCP_FLOOD ON
+set NOTIFY_ON_TERMINATION OFF
+set SCROLL ON
+set SEND_IGNORE_MSG OFF
+set SHOW_AWAY_ONCE ON
+set SHOW_CHANNEL_NAMES ON
+set SHOW_END_OF_MSGS ON
+set SHOW_NUMERICS OFF
+set SHOW_STATUS_ALL ON
+set SHOW_WHO_HOPCOUNT ON
+set STATUS_AWAY  (Away)
+set STATUS_CHANNEL  %C
+set STATUS_CHANOP @
+set STATUS_CLOCK  %T
+set STATUS_HOLD  --<More>--
+set STATUS_MODE  (+%+)
+set STATUS_MAIL  M:%M
+set STATUS_NOTIFY  A:%F
+set STATUS_OVERWRITE (overwrite) 
+set STATUS_QUERY  Q:%Q
+set STATUS_UMODE  (+%#)
+set STATUS_WINDOW <
+set SUPPRESS_SERVER_MOTD OFF
+set TAB ON
+set TAB_MAX 2
+set UNDERLINE_VIDEO ON
+set USER_WALLOPS OFF
+set VERBOSE_CTCP OFF
+set WARN_OF_IGNORES ON
+bind meta1-[ meta2
+bind meta1-O meta2
+bind meta2-A backward_history
+bind meta2-B forward_history
+bind meta2-C forward_character
+bind meta2-D backward_character
+bind ^B self_insert
+bind ^_ self_insert
+bind ^V self_insert
+bind ^Z stop_irc
+bind ^I parse_command ^getmsg 1 $msglist
+bind ^R parse_command ^getmsg -1 $msglist
+bind ^F parse_command //flush
+bind ^Y parse_command /holdset
+alias b ban
+alias s status
+alias ww whowas
+alias wi whois
+alias bk kb $0-
+alias c mode $C $0-
+alias exit quit
+alias ji //join $decode($inv_chan)
+alias wii wi $0 $0
+alias quit signoff $0-
+alias m msg
+alias n notice
+alias xr {eval ^s $0 $1-}
+alias vr {^assign $0 $1-
+@qload=1}
+alias cls clear
+alias undo drop $0-
+alias umode mode $N $0-
+alias nnotice quote NOTICE $0 :$1-
+alias kkick quote KICK $0 $1 :$2-
+alias mmode quote MODE $0-
+alias nk quote MODE $C -k $ckey
+alias mc quote MODE $C -lsnmpitk $ckey
+alias _checkkey if (!rmatch($M *k*)) {^set status_mode  (+%+)}{^timer 15 _checkkey}
+alias deop ndop $C $0-
+alias ws whospl
+alias getig {@FUNCTION_RETURN=ig_count * 60}
+alias submode if (mcount>0) {@mcount=mcount - 1}
+alias subkick if (kcount>0) {@kcount=kcount - 1}
+alias enickonly {^assign FUNCTION_RETURN $encode($left($index(! $0) $0))}
+alias userdomain @FUNCTION_RETURN=LEFT($INDEX(@ $0) $0)##[@]##MID(${1+INDEX(. $0)} 99 $0)
+alias hostonly @FUNCTION_RETURN=mid(${index(@ $0)+1} 99 $0)
+alias newdate @FUNCTION_RETURN=mid(4 12 $stime($0))
+alias _pa if (isop($N $1)) {/kkick $1 $0 $cflms}
+alias _pe if ([$1]==[$C]) {/echo <$0> $2-}{/echo <$0:$1> $2-}
+alias safe {^assign FUNCTION_RETURN $strip(\;\(\)*/\\\{\}$$~`|'\" $0-)}
+alias msafe {^assign FUNCTION_RETURN $strip(\;$$ $0-)}
+alias j if ((![$0])||([&]==[$[1]0])||([#]==[$[1]0])||([$0]==[0])||([-]==[$[1]0])) {//join $0-} {//join #$0-}
+alias l if (![$0]) {//leave $C}{/if (([&]==[$[1]0])||([#]==[$[1]0])||([$0]==[*])) {//leave $0} {//leave #$0}}
+alias part leave
+alias _db {if ([$esound]==[ON]) {^exec -name qsnd wavplay -q ~/.wav/$0.wav}}
+on ^exec_error "qsnd *" #
+on ^window "? ??? ?URRENTLY ?RESENT*" {if (![$_nq]) {echo $1-}
+^assign -ntfl
+^assign ntfl $4-}
+on ^window "? ??? ?URRENTLY ?BSENT*" {if (![$_nq]) {echo $1-}
+^assign ntfl $ntfl $4-}
+on ^window "? ??? ?SERS ON*" echo *** $strip(: $4) users: $5-  
+on ^372 "*" _mck $0-
+on ^375 "*" _mck $0-
+on ^376 "*" _mck $0-
+on -004 "*" _host
+on ^212 "*" echo *** $1-
+on ^305 "*" #
+on ^306 "*" #
+on ^301 "*" echo *** Away: $1-
+on ^310 "*" echo *** $1 is an authorized IRC helper.
+on ^311 "*" {echo *** $1 is $2@$3 \($5-\)}
+on ^312 "*" echo *** Via $1 \($2-\)
+on ^313 "*" echo *** $1 is an IRC Operator.
+on ^314 "*" {echo *** $1 was $2@$3 \($5-\)}
+on ^329 "*" {echo *** $1 created $mid(4 12 $stime($2)).}
+on ^462 "*" echo *** $0-
+on ^404 "*" _csy $0-
+on ^431 "*" echo *** $0-
+on ^482 "*" _csy $0-
+on ^219 "*" #
+on ^271 "*" echo *** $1 has silenced $2-
+on ^272 "*" #
+on ^318 "*" #
+on ^360 "*" #
+on ^323 "*" #
+on ^366 "*" #
+on ^369 "*" #
+on ^319 "*" echo *** On $1- 
+on ^317 "*" {if (index(012345679 $3) != -1) {^assign -_st
+^assign -_mt
+^assign _st $2
+@_mt=_st / 60
+echo *** Idle $_mt minute\(s\) \($2 seconds\)
+echo *** Signed on $stime($3)}{^assign -_st
+^assign -_mt
+^assign _st $2
+@_mt=_st / 60
+echo *** Idle $_mt minute\(s\) \($2 seconds\)}}
+on ^333 "*" echo *** $2 set $1 topic on $mid(4 15 $stime($3))
+on ^332 "*" echo *** $1 topic: "$2-"
+on ^324 "*" echo *** $1 mode is: "$2"
+on ^371 "*" echo *** $1-
+on ^381 "*" echo *** You are now an IRC Operator
+on ^382 "*" echo *** $1-
+on ^401 "*" echo *** $1 cannot be found (No such nick or channel)
+on ^402 "*" echo *** $1 cannot be found (No such nick or server)
+on ^403 "*" echo *** $2-: $1
+on ^404 "*" echo *** You are banned from sending to $1 
+on ^405 "*" echo *** Cannot join because you are on too many channels
+on ^406 "*" echo *** $1 cannot be located (Nick did not exist)
+on ^421 "*" echo *** Server does not implement command: $1
+on ^433 "*" echo *** Cannot change nickname because $0 is already in use
+on ^437 "*" echo *** Cannot change nickname while banned on $1 
+on ^438 "*" echo *** $2-
+on ^441 "*" echo *** $1 is not on channel $2
+on ^443 "*" echo *** $1 is already on $2
+on ^471 "*" echo *** Cannot join $1 because the channel is full
+on ^472 "*" echo *** "$1" is not a valid mode character
+on ^473 "*" echo *** Cannot join $1 unless invited
+on ^474 "*" echo *** Cannot join $1 because you are banned
+on ^475 "*" echo *** Cannot join $1 unless you supply the correct channel password
+on ^478 "*" echo *** Cannot ban "$2" from $1 because the banlist is full
+on ^482 "*" echo *** You are not a channel operator on $1 
+on ^484 "*" echo *** Cannot kick or deop channel service
+on ^501 "*" echo *** Unknown flag for usermode
+on ^window "? ??? ?TCP PING reply from*" #
+on ^raw_irc "*!*@* NOTICE * :PING *" echo *** PONG: $0 - $tdiff(${[$time()] - [$left(9 $4)]}) 
+alias dcc {//dcc $0-
+if ([$0]==[CHAT]) {^addmsg $strip(\\ \=$1) $msglist
+^on ^401 "% $1 *" {^dcc close chat $1
+qq Cannot find $1}
+cwait ^on ^401 - "% $1 *"}}
+alias _rw {^on ^315 "*" #}
+_rw
+alias _tmr {^timer -delete $0
+^timer -refnum $0-}
+alias isop {if (([$1] == [$C])&&([$0] == [$N])) {if ([$P] == [@]) {@FUNCTION_RETURN=1}{@FUNCTION_RETURN=0}}
+{/EVAL @FUNCTION_RETURN=$ischanop($0 $1)}}
+alias holdset {^set HOLD_MODE TOGGLE
+qq Pause per full screen is now $HOLD_MODE\.}
+alias cwait {wait -CMD #
+wait -CMD $0-}
+alias sb {^assign _issb 1
+^assign _cbp 0
+^on ^367 "*" {if ([$4]) {/qq $[10]1 $[38]2 $[9]3 $newdate($4)
+@_cbp=_cbp + 1}
+{/qq $1-}}
+if ([$0]) {//mode #$strip(# $0) +b}
+{//mode $C +b}
+cwait ^on 367 - "*"}
+on ^368 "*" {if ([$_issb]) {qq $C Bans placed: $_cbp 
+assign -_cbp
+assign -_issb}}
+alias w if ([$0]) {if ([$0]==[-chops]) {//who $0 $C $1-} 
+{//who -h $0-}}
+{//who $C}
+alias tc {if ([$0]==[#*]) {//quote TOPIC $0 :}
+{//quote TOPIC $C :}}
+alias t if ([$0]==[#*]) {//topic $0-}
+{//topic $C $0-}
+alias inv {if ([$0]) {if ([$1]) {//invite $0-}
+{//invite $0 $C}}
+{/qq Who do you want to invite?}}
+alias _mck {if ([$showmotd]==[ON]) {qp *** $1-}}
+alias ver {if ([$0]) {/ctcp $0 VERSION}
+{/ctcp $C VERSION}}
+alias p {if ([$0]) {//ping $0}{//ping $C}}
+alias op {mmode $C +ooo $0 $1 $2
+if ([$3]) {/op $3-}}
+alias ndop {mmode $0 -oo $1 $2
+if ([$3]) {/ndop $0 $3-}}
+alias ftm {if ([$left(1 $0)]==[0]) {@timestr=[$mid(1 4 $0)]}{@timestr=[$left(5 $0)]}
+@timestr=[$strip(AP $timestr)$tolower($right(2 $0))]
+@FUNCTION_RETURN=[$timestr]}
+alias _csy {if ([$0]!=[$desynch]) {if ([$0]!=[$S]) {qq DESYNCH: $0
+_bar 10 Desynch
+^assign desynch $0
+_tmr 500 30 ^assign -desynch}{/echo *** $1-}}}
+alias mdact {if ((isop($N $1))&&([$mdwait]!=[$0])&&([$decode($0)]!=[$N])) {
+mmode $1 -o $decode($0)
+qq MASS DEOP by $decode($0) on $1 
+_bar 10 Mass Deop
+^assign mdwait $0
+_tmr 501 8 ^assign -mdwait}
+@mcount=0}
+alias kact {if ((isop($N $1))&&([$kwait]!=[$0])&&([$decode($0)]!=[$N])) {
+mmode $1 -o $decode($0)
+qq MASS KICK by $decode($0) on $1 
+_bar 10 Mass Kick
+^assign kwait $0
+_tmr 502 8 ^assign -kwait}
+@kcount=0}
+alias mdtest {if ([$0]==[$lastmd]) {@mcount=mcount + $2
+^timer 12 submode
+if (mcount>m_fc) {/mdact $0 $1}}{^assign lastmd $0
+@mcount=$2
+^timer 12 submode
+if (mcount>m_fc) {/mdact $0 $1}}}
+alias ktest {if (([$0]==[$lastmdk])&&([$0]!=[$encode($N)])) {
+@kcount=kcount + 1
+^timer 12 subkick
+if (kcount>k_fc) {/kact $0 $1}
+}{^assign lastmdk $0}}
+on -raw_irc "% MODE *" {@mdcnt=0
+@ncnt=0
+^assign mde +
+^assign mdech $3
+^assign nx $4-
+@mdchop=[$encode($left($index(! $0) $0))]
+if (([$prot]==[ON])&&(rmatch($3 -ooo* *-ooo*))) {/mdact $mdchop $2}
+while (mid($mdcnt 1 $mdech)!=[]) {^assign mdecc $mid($mdcnt 1 $mdech)
+if (([$mdecc]==[-])||([$mdecc]==[+])) {^assign mde $mdecc}{if (match($mdecc b o k l m n s t p i)) {if ([$mde$mdecc]==[+b]) {if ((match($word($ncnt $nx) $ownadd))&&(rmatch($0 *!*))) {/bsav $2 $mdchop $word($ncnt $nx)}
+^assign -SVBAN}
+if ([$mde$mdecc]==[-o]) {/if ([$prot]==[ON]) {/mdtest $mdchop $2 1}}
+if ([$mde$mdecc]==[+k]) {^assign ckey $word($ncnt $nx)
+if ((rmatch($word($ncnt $nx) $fchr))&&(rmatch($0 *!*))) {EVAL ^set status_mode  $word(0 \(+$M\))
+^timer 10 _checkkey
+if ((isop($N $2))&&([$chanp]==[ON])) {/mmode $2 -k $word($ncnt $nx)}}}
+@ncnt=ncnt + 1}}
+@mdcnt=mdcnt + 1}}
+on ^mode "%.% *" {/echo *** $0 sets $1: "$2-"}
+alias bsav {if (isop($N $0)) {if ([$dissolve]==[ON]) {mmode $0 -b $2}}
+^assign SVBAN YES
+qq YOU HAVE BEEN BANNED by $decode($1)
+_db banned
+_bar 10 BANNED}
+on -raw_irc "% KICK *" {^assign kickchan $strip(: $2)
+^assign kickperson $encode($left($index(! $0) $0))
+if ([$prot]==[ON]) {/ktest $kickperson $kickchan}
+if (([$3]==[$N])&&([$REJOIN]==[ON])) {/qq YOU HAVE BEEN KICKED by $decode($enickonly($0))
+cwait //join $kickchan
+_db kicked
+_bar 10 KICKED}}
+on -channel_nick#2 "*" {if (([$chanp]==[ON])&&([$2]!=[$N])) {
+if ([$newnick1]==[$encode($1)]) {@nickcnt=nickcnt + 1}
+if (nickcnt==nick_fc) {if (isop($N $0)) {kkick $0 $2 $nflms
+qq NICK FLOOD by $2 on $0 
+_db alert
+_bar 10 Nick Flood}
+@nickcnt=0}
+^assign newnick1 $encode($2)
+^timer 30 ^assign -newnick1
+^timer 30 @nickcnt=0}}
+on ^join "*" ^_ntj $encode($tolower($1)) $encode($0) $1 $0 $encode($msafe($userhost()))
+alias _ntc {foreach spt ii {foreach spt.$ii jj {
+if ( time() - spt[$ii][$jj] > 300 ) {foreach sigc.$(ii).$jj xx {
+foreach sigc.$(ii).$(jj).$xx yy {^assign -sigc[$ii][$jj][$xx][$yy]
+^assign -sigc[$xx][$yy]}}
+^assign -xx
+^assign -yy
+^assign -ib[$ii][$jj]
+^assign -spn[$ii][$jj]
+^assign -spt[$ii][$jj]}}}
+^assign -ii
+^assign -jj}
+alias isbogus {if ([$3]) {@function_return=1}
+if (rmatch(.$1. $bpt $fchr *..*)) {@function_return=1}
+if (rmatch(.$2. $bpt $fchr *..*)) {@function_return=1}}
+on ^channel_signoff "% % %.% %.*" {if (isbogus($1-)) {/echo *** Quit: $1 \($2-\)}
+{^_ntb $encode($tolower($0)) $encode($1) $encode($2).$encode($3) $2-}}
+alias _ntb {^assign sigc[$2][$0][$1] 1
+^assign sigc[$0][$1] $2
+^assign spt[$2] $time()
+if (ib[$2]==[]) {^assign ib[$2] 1
+^assign spn[$2] $3-
+qq NETSPLIT \($3-\)
+_db netsplit
+_bar 10 Netsplit}}
+alias _ntj {if (sigc[$0][$1]) {if (ib[$sigc[$0][$1]]) {/qq NETJOIN \($spn[$sigc[$0][$1]]\)
+_db netjoin
+_bar 10 Netjoin}
+^assign -ib[$sigc[$0][$1]]
+^assign -sigc[$sigc[$0][$1]][$0][$1]
+^assign -sigc[$0][$1]}{if ([$2]==[$C]) {/echo *** $3 \($decode($4)\) joins $C}
+{/echo *** $3 \($decode($4)\) joins $2 }}}
+alias lformat {@IRCII.word=[$1-]
+if (@IRCII.word < [$0]) {@FUNCTION_RETURN=[$([$0]IRCII.word)]}
+{@FUNCTION_RETURN=[$IRCII.word]}}
+alias whospl {qq Nicknames affected by last netsplit and servers that split:
+foreach sigc ii {/foreach sigc.$ii jj {/qq $lformat(30 $decode($ii)) $lformat(30 $decode($jj)) }}
+^assign -ii
+^assign -jj}
+alias fcheck {@FUNCTION_RETURN=0
+if (([$flp]==[ON])&&(!match($decode($0) $flood_ok))) {
+if ((match(**** $3-))||(rindex($right(1 $3) $3) >= 200)) {ignore_flood $0 $1 $hostonly($2)
+clflood $1
+@FUNCTION_RETURN=1}
+if (match($qtflood $lastmsg $lastnotice $lastctcp)) {
+EVAL @ $1count = $($1count)+1
+EVAL ^timer $rstct subcnt $1
+if ((msgcount==msg_fc)||(noticecount==notice_fc)||(ctcpcount==ctcp_fc)) {
+ignore_flood $0 $1 $hostonly($2)
+clflood $1
+@FUNCTION_RETURN=1}}{/clflood $1}
+^assign qtflood $hostonly($2)
+^assign last$1 $qtflood}}
+alias clflood {if ([$0]==[MSG]) {@msgcount=0;^assign -lastmsger}
+if ([$0]==[NOTICE]) {@noticecount=0;^assign -lastnoter}
+if ([$0]==[CTCP]) {@ ctcpcount=0;^assign -lastctcp}}
+alias subcnt {if (([$0]==[MSG])&&(msgcount>0)) {@msgcount=msgcount - 1}
+if (([$0]==[NOTICE])&&(noticecount>0)) {@noticecount=noticecount - 1}
+if (([$0]==[CTCP])&&(ctcpcount>0)) {@ctcpcount=ctcpcount - 1}}
+alias ignore_flood {EVAL //^ignore *@$2 $igtypes
+EVAL ^timer $getig() _igexp $0 $2
+qq ${FLA}$1 FLOOD from $decode($0). Ignoring for $ig_count\ minutes.
+_db alert
+eval _bar 10 $1 Flood
+if ([$floodmsg]!=[]) {/nnotice $decode($0) $floodmsg}}
+alias _igexp {//^ignore *@$1 NONE
+qq No longer ignoring ${BLD}$decode($0) [$1] \(Timer expired\).}
+alias fok {if ([$0]) {if (!match($0 $flood_ok)) {@flood_ok=flood_ok ## [ $0]
+qq Nickname ${BLD}$0 will now not trigger flood protection.
+}{/qq Nickname ${BLD}$0 is already on your flood ok list.}}{qq Nicknames that won't trigger flood protection:
+qq ${BLD}$flood_ok }
+if ([$1]) {/fok $1-}}
+alias frem {if ([$0]) {if (match($0 $flood_ok)) {@flood_ok=rem_w($0 $flood_ok)
+qq Nickname $0 has been removed from your flood ok list.
+}{/qq $0 is not on your flood ok list.}}
+{/qq Usage: /remflood \(nick\)}
+if ([$1]) {/frem $1-}}
+on ^public "% % *******" {if ([$flp]==[ON]) {_pe $0 $1 [!-Excess Beeps-!] $msafe($2-)
+}{/_pe $0 $1 $2-}
+if ([$chanp]==[ON]) {/_pa $0 $1}}
+alias _apg {eval ^set status_user1 $tdiff(${[$time()] - _ini})
+if ([$autolag]==[ON]) {//quote PING $time() $S}}
+alias _upd {if ([$sbrun]==[1]) {^_rst}}
+on ^raw_irc "%.% PONG *" {if ([$0]==[$S]) {^assign ltm ${time()-mid(1 999 $3)}
+if (ltm==0) {^assign ltsb :}
+{^assign ltsb $mid(0 $ltm $dd)}
+_upd}}
+alias bc {if ([$efldr]!=[]) {/eval ban -d $decode($efldr)}{qq No CTCP warnings recieved so far.}}
+on ^raw_irc "*!*@* % % :*ECHO*" _cbc ECHO $0 $2
+on ^raw_irc "*!*@* % % :*%INFO*" _cbc INFO $0 $2
+on ^raw_irc "*!*@* % % :FINGER*" _cbc FINGER $0 $2
+on ^raw_irc "*!*@* % % :****" _cbc EXCESS $0 $2
+on ^raw_irc "*!*@* % % :*[*" _cbc GARBAGE $0 $2
+on ^raw_irc "*!*@* % % :UTC*" _cbc UTC $0 $2
+on ^raw_irc "*!*@* % % :TIME*" _cbc TIME $0 $2
+on ^raw_irc "*!*@* % % :*DCC CHAT***DCC CHAT**" _cbc CHAT $0 $2
+alias _cbc {if ([$doctcps]==[ON]) {/qq CTCP $0 from $decode($enickonly($1)) to $2. /BC to domain ban.}
+^eval assign efldr $enickonly($1)}
+on ^raw_irc "% PRIVMSG % :VERSION*" {_cbc VERSION $0 $2
+if ([$sver]!=[]) {if ([$LASTVER]!=hostonly($0)) {if (![$_vto]) {/nnotice $decode($enickonly($0)) VERSION $sver\
+^assign _vto 1
+^timer $verto ^assign -_vto}{}}}
+^assign LASTVER $hostonly($0)
+_tmr 420 30 ^assign -LASTVER}
+on -ctcp "*" {if (!match($2 ACTION DCC SOUND TIME UTC ERRMSG SED ECHO)) {qq CTCP \($safe($[-35]2-)\) from $0 to $1.}}
+on -ctcp "% % SOUND *" {if ([$csound]==[ON]) {^exec -name qsnd wavplay -q ~/.wav/"$safe($strip(&! $3))"}{}
+if ([$[1]1]!=[#]) {/echo >*))< $0 $4- [$3]}
+{/if ([$C]!=[$1]) {/echo *)) $1 >> $0 $4- [$3]}
+{/echo *)) $0 $4- [$3]}}}
+on -ctcp "% % PING *" {^assign pingadr $safe($userhost())
+if ([$fcheck($encode($0) CTCP $pingadr $2-)]==0) {if ([$left(1 $1)]==[$]) {/qq Server wide PING from $0 on $strip(\$ $1).}{
+if (rmatch($1 #*)) {/qq $0 pinged everyone in $1.}
+{/qq $0 pinged you.}
+if ([$pingmsg]!=[]) {/nnotice $0 $PINGMSG}}}}
+on ^invite "*" {if ([$fcheck($encode($0) CTCP $safe($userhost()) $1-)]==0) {
+if ([$rmatch($1 $fchr)]||[$1]==[0]) {/qq $0 fake-invited you to $1}
+{/echo *** $0 invites you to $1}}
+^assign inv_chan $encode($1)}
+on ^send_msg "*" {echo >[$0]< $1-
+^addmsg $strip(\\ $0) $msglist}     
+on ^dcc_chat "*" echo =$0= $1-
+on ^sendaliasction "*" if ([$[1]0]!=[#]) {/echo * $0 >> $N $1-}
+{/echo * $N $1-}
+on ^send_public "*" {if ([$0]==[$C]) {/echo <${N}> $1-} {/echo -> <${N}> $1-}}
+on ^send_dcc_chat "*" {echo <=$0=> $1-
+^addmsg $strip(\\ \=$0) $msglist}
+on ^action "*" if ([$[1]1]!=[#]) {/echo >*< $0 $2-}
+{/if ([$C]!=[$1]) {/echo * $1 >> $0 $2-}
+{/echo * $0 $2-}}
+on ^public_other "*" {/echo <$0/$1> $2-}
+on ^exec "imc *" {qq Mail From: $safe($1-)}
+on ^exec_error "imc *" #
+on ^mail "*" {//exec -name imc frm | tail -$0
+qq You've got mail! \($1\)
+_db newmail
+_bar 15 New Mail}
+^on ^window "? ??? ?ecursive call to irc_io*" #
+^on ^window "? ??? ?ou have new mail*" #
+^on ^window "? ??? ?ubject*" #
+alias _desb {if ([$esound]==[OFF]) {eval beep}{#}}
+on ^msg "*" {^assign msghost $safe($userhost())
+if (fcheck($encode($0) MSG $msghost $1-)==0) {if (encode( *$0*  $1-) != lmes) {
+if (mesi==[ON]) {if (miws) {^xecho -window Privmsgs <]$0:$Userdomain($msghost)[> $1-
+if ([$privbeep]==[ON]) {_db privmsg
+_desb}}
+{/echo <]$0:$Userdomain($msghost)[> $1-
+if ([$privbeep]==[ON]) {_db privmsg
+_desb}}}{if (miws) {^xecho -window Privmsgs <]$0:$Userdomain($msghost)[> $1-
+if ([$privbeep]==[ON]) {_db privmsg
+_desb}}
+{/echo <]$0[> $1-}}}
+if (iaw==[YES]&&[$savepriv]==[ON]) {^exec echo "[$ftm($Z)] <] $safe($0):$userdomain($msghost) [> $safe($strip(! $1-))" >> $awayfle
+@aliasprv=aliasprv + 1}
+^assign lmes $encode(*$0* $1-)
+}{^assign lmes $encode( *$0*  [FLooD])}
+^addmsg $strip(\\ $0) $msglist}
+alias dm {if ([$0]) {//msg $0 $decode($lmes)}
+{/say $decode($lmes)}}
+alias dmw {wall $decode($lmes)}
+on ^notice "*" {if ([$fcheck($encode($0) NOTICE $safe($userhost()) $1-)]==0) {if (rmatch($1 *WallOp*)) {/echo \[$0\] $1-}
+{/echo -$0- $1-}
+^assign lnotice $encode(-$0- $1-)}
+{^assign lnotice $encode(-$0- [Flood])}}
+alias dn {if ([$0]) {//msg $0 $decode($lnotice)}
+{/say $decode($lnotice)}}
+on -timer "*" {^_ntc
+if (rmatch($0 %:00*)) {eval _bar 10 It is now $tolower($0)}
+if (rmatch($0 %:30*)) {eval _bar 10 It is now $tolower($0)}
+^_apg}
+on -idle "*" {if (([$0]==[$idletime])&&([$iaw]==[NO])) {_saway $idms
+qq You have been away for $idletime minutes. Auto set-away engaged!}}
+alias mlview {qq Tabkey Message List: $msglist }
+alias mldel {@msglist=rem_w($0 $msglist)}
+alias addmsg {@matched=rmatch($0 $^\1-)
+if (matched) {@msglist=[$(0-${matched-1}) $(${matched+1}-)]}
+{@msglist=[$(0-${msgmax-1})]}
+@msgcnt=0
+^assign -matched}
+alias sound {if ([$0]) {//ctcp $0 SOUND $1 $2-
+echo *)) $0 >> $N $2- \[$1\]}
+{qq Usage: /sound \(nick/channel\) \(sound file\) \(remainder of action\)}}
+alias getmsg {@msgcnt=msgcnt + [$0]
+if (#msglist < msgcnt) {@msgcnt=1}
+if (msgcnt <= 0) {@msgcnt=#msglist}
+@junk=K ## [m]
+//type ^U$junk $^^{[$($msgcnt)]} }
+alias pu {if ([$0]) {^assign _puo $0
+^on ^367 "*" {if ([$3]==[$_puo]) {^assign _pud $_pud $2}{}
+^on ^368 "*" {_pua}}
+c b}{qq Usage: /pu (placer)}}
+alias _pua {qq $C Dropping $#_pud bans...
+cbl2 $_pud
+^assign -_pud
+on ^368 "*" {if ([$_issb]) {qq $C Bans placed: $_cbp 
+assign -_cbp
+assign -_issb}}}
+alias bandef {if ([$0]==[N]) {@bandef=[Normal]}
+if ([$0]==[H]) {@bandef=[Host]}
+if ([$0]==[D]) {@bandef=[Domain]}
+if ([$0]==[S]) {@bandef=[Screw]}
+if (!match($bandef Normal Host Domain Screw)) {@bandef=[Normal]}
+@dfbt=left(1 $bandef)
+qq Default ban is $dfbt \($bandef\).}
+alias ban {if ([$0]) {if (!rmatch($0 *!* *@* *.*)) {if ([$1]) {@qwho=[$1]
+@qprm=mid(1 1 $0)}{@ qwho= [$0]
+@qprm=dfbt}
+userhost $qwho -CMD if ([$4]!=[<UNKNOWN>]) {@qban=[]
+if (match($qprm S N H D)) {@qban=[$($qprm\ban($3 $4 *))]}
+if (!(qban)) {@qban=nban($3 $4 *)}
+if (isop($0 $C)) {/mmode $C -o+b $0 $qban} {/mmode $C +b $qban}}{/qq Cannot find $0}}{/c +b $0-}}
+{/qq Usage: /ban [bantype] \(nick\)}}
+alias kb {if ([$0]) {@qprm=[$0]
+if (index(! $0)!=-1) {@qprm=mid(1 1 $0)
+@qwho=[$1]
+@qbkr=[$2-]}{@qprm=dfbt
+@qwho=[$0]
+@qbkr=[$1-]}
+if (qbkr) {@qbkr=[$qbkr\]} {@qbkr=[$pk]}
+userhost $qwho -CMD if ([$3]!=[<UNKNOWN>]) {@qban=[]
+if (match($qprm s h n d)) {@qban=[$($qprm\ban($3 $4 *))]}
+if (!(qban)) {@qban=nban($3 $4 *)}
+mmode $C -o+b $0 $qban
+kkick $C $0 $qbkr}{/qq I couldn't find $0 on-line.}}{/qq Usage: /bk \(nick\) [reason]}}
+alias sban {@cnt=0
+@tomake=[$0@$1]
+@temp=[$1]
+^assign tomake $0@*$right(${@temp-index(. $1)} $1)
+^assign -temp 
+if ((mid($cnt 1 $0)==[~])||(mid($cnt 1 $0)==[#])) {@cnt=1}
+while (mid($cnt 1 $tomake)!=[]) {@rnd=rand(10)
+if ((mid($cnt 1 $tomake)==[*])||(mid($cnt 1 $tomake)==[@])||(mid($cnt 1 $tomake)==[.])||(mid($cnt 1 $tomake)==[])||(mid($cnt 1 $tomake)==[])) {@temp=[$temp$mid($cnt 1 $tomake)]}
+{if (rnd>4) {@temp=[$temp?]}
+{@temp=[$temp$mid($cnt 1 $tomake)]}}
+@cnt=cnt + 1}
+@FUNCTION_RETURN=[*!*$temp]}
+alias nban @FUNCTION_RETURN=[$2!]##fixname($0 $2)##[@]##fixdomain($1 $2)
+alias hban @FUNCTION_RETURN=[$2!$2@]##fixhost($1 $2)
+alias dban @FUNCTION_RETURN=[$2!$2@]##fixdomain($1 $2)
+alias fixhost {if (index(. $0)==rindex(. $0)) {@FUNCTION_RETURN=[$1] ## [$0]}
+{@FUNCTION_RETURN=[$0]}}
+alias fixname {if (rmatch($0 ?? ?)) {@FUNCTION_RETURN=[$1]}
+{@FUNCTION_RETURN=[$1] ## mid(1 99 $0)}}
+alias fixdomain {if (index(. $0)!=rindex(. $0)) {if (is_ip($0)) {@FUNCTION_RETURN=left($rindex(. $0) $0) ## [.$1]}
+{@ FUNCTION_RETURN=[$1$mid($index(. $0) 99 $0)]}} {@ FUNCTION_RETURN=[$1$0]}}
+alias is_ip {if ((right(1 $0) >= [0]) && (right(1 $0) <= [9]))
+{@FUNCTION_RETURN=[1]}
+{@FUNCTION_RETURN=[0]}}
+alias cbl2 {if ([$3]) {mmode $C -bbb $0 $1 $2
+cbl2 $3-}{if ([$2]) {/mmode $C -bbb $0 $1 $2}{if ([$1]) {/mmode $C -bb $0 $1}{
+if ([$0]) {/mmode $C -b $0}}}}}
+alias drop {if ([$0]) {^assign -tdr
+@tdr=[$0]
+^on ^367 * if (rmatch($2 *$tdr*)) {@bl=[$bl $2]}
+^assign cnt 0
+^mode $C +b
+wait
+while (word($cnt $bl)) {cbl2 $word($cnt $bl) $word(${cnt+1} $bl) $word(${cnt+2} $bl)
+@cnt=cnt + 3}
+^assign -bl
+^assign -cnt
+^on ^367 -*} {qq Usage: /drop (keyword)}}
+alias unban {if ([$0]) {^assign -bunband
+if (!rmatch($0 *@* *!* *.*)) {userhost $0 -CMD if ([$4]!=[<UNKNOWN>]) {^assign dbanz $0!$3@$4
+^on ^367 "*" {if ((match($2 $dbanz))||(match($dbanz $2))) {^assign bunband $2 ${bunband}}}
+//^mode $C +b
+wait
+cbl2 $bunband}}}{/qq Usage: /unban (nick/filter)}}
+alias _upn {notify
+^assign -_nq}
+^assign _nq 1
+alias _fin {timer 5 _upn
+if ([$splash]==[ON]) {_bar 15 ** Welcome to DoRq **}
+^assign qld 1
+_spl
+EVAL set INPUT_PROMPT > }
+alias _qu {if (match($toupper($1) ON. OFF.)) {eval ^assign $0 $toupper($strip(. $1))}{}
+eval qq $2- is $($0).}
+alias mesi {_qu mesi $0. Extra privmsg info}
+alias prot {_qu prot $0. Mass deop/kick protection}
+alias flp {_qu flp $0. Message/Notice/CTCP flood protection}
+alias chanp {_qu chanp $0. Channel flood/bomb protection}
+alias rejoin {_qu rejoin $0. Auto rejoin when kicked}
+alias privbeep {_qu privbeep $0. Beep on private message}
+alias dissolve {_qu dissolve $0. Dissolve bans placed on you}
+alias splash {_qu splash $0. Opening splash screen}
+alias anncaway {_qu anncaway $0. Announce aways}
+alias anncback {_qu anncback $0. Announce return from aways}
+alias doctcps {_qu doctcps $0. Warn user of CTCPs}
+alias showmotd {_qu showmotd $0. Show MOTD while connecting}
+alias savepriv {_qu savepriv $0. Saving of privmsgs when away}
+alias esound {_qu esound $0. Event sounding}
+alias csound {_qu csound $0. Playing of CTCP sounds}
+alias autolag {if (match($0 ON OFF)) {^assign autolag $toupper($0)
+if ([$0]==[OFF]) {^assign -ltsb
+_upd}{_apg}}
+qq Lag-O-Meter is $autolag\.}
+alias log {if (match($0 ON OFF)) {^set log $0
+^assign logirc $toupper($0)}
+qq The IRC Logfile is $logirc\.}
+alias look {if ([$0]) {if (!match($0 $look)) {@look=look ## [ $0]
+if ([$qld]==[1]) {qq $0 added to look list.}
+EVAL ^on ^public "% % *$0*" {/echo <$0> $2-}
+EVAL ^on ^action "% % *$0*" {/echo * $0 $2-}
+}{/qq $0 is already on your look list.}}{qq Words on your look list:
+qq $look}
+if ([$1]) {/look $1-}}
+alias rlook {if ([$0]) {if (match($0 $look)) {@look=rem_w($0 $look)
+^on public -"% % *$0*"
+^on action -"% % *$0*"
+qq $0 has been removed from your look list.
+}{/qq $0 is not on your look list.}}
+{/qq Usage: /rlook <word>}
+if ([$1]) {/rlook $1-}}
+alias _qua {if ([$1]) {^assign $0 $1-
+qq $_strg $1-\}{qq $_strg $($0)\}
+^assign -_strg}
+alias CFCTCP {^assign _strg CTCP flood after
+_qua ctcp_fc $0}
+alias CFTIME {^assign _strg Flood-induced ignores last
+_qua ig_count $0}
+alias CFRST {^assign _strg Flood timer resets after
+_qua rstct $0}
+alias CATIME {^assign _strg Idle auto-away time is
+_qua idletime $0}
+alias CVERTO {^assign _strg Version timeout is
+_qua verto $0}
+alias CVERSION {^assign _strg CTCP VERSION reply is:
+_qua sver $0-}
+alias CPING {^assign _strg CTCP PING notice reply is:
+_qua pingmsg $0-}
+alias CFLOODM {^assign _strg FLOODMSG is:
+_qua floodmsg $0-}
+alias CIDLE {^assign _strg IDLE REASON is:
+_qua idms $0-}
+alias CSIGN {^assign _strg SIGNOFF MSG is:
+_qua signmsg $0-}
+alias CUMODE {^assign _strg DEFAULT USERMODE is:
+_qua usermode $0-}
+alias CBACK {^assign _strg BACK ACTION is: * $N\
+_qua backmsg $0-}
+alias CKMSG {^assign _strg KICK MSG is:
+_qua pk $0-}
+alias wall {if ([$0]) {_wop $0- } {qq You need to specify a message to send.}}
+alias _wop {if ([$C]==0) {_nc}{^assign message $encode($0-)
+echo \[$N\] /WallOp $C\/ $decode($message)
+^on ^names "*" _sw $$1-
+^names $C
+wait -CMD ^on names - "*"}}
+alias _sw {if ([$0]) {if (([$[1]0] == [@]) && ([$0] != [@] ## N)) {if ([$sendlist]==[]) {^assign sendlist $strip(@ $0)
+^assign showlist $strip(@ $0)
+_sw $1-}{^assign sendlist $strip(@ $0),$sendlist
+^assign showlist $strip(@ $0) $showlist
+_sw $1-}}{/_sw $1-}}{if ([$sendlist]!=[]) {//^notice $sendlist /WallOp $C\/ $decode($message)
+qq ${BLD}Sent: $showlist 
+^assign -sendlist
+^assign -showlist}}}
+alias fk {if ([$0]) {qq Filter Kick of $0 in $C started.
+^assign fkfilt *$strip(* $0)
+^on ^who "*" {if ((rmatch($1!$3@$4 $fkfilt))&&([$1]!=[$N])) {^assign ftbkick $encode($1) ${ftbkick}}}
+//who $C
+cwait dofilterkick}{/qq Usage: /fk (hostname)}}
+alias fbk {if ([$0]) {mmode $C +b $0
+fk $0}{/qq Usage: /fbk (hostname)}}
+alias dofilterkick {@fkcnt=0
+while ([$(#ftbkick)]>fkcnt) {kkick $C $decode($word($fkcnt $ftbkick)) $C
+@fkcnt=fkcnt + 1}
+if ([$ftbkick]!=[]) {/qq $fkcnt people kicked from $C with the filter $fkfilt\.}
+{/qq No one matching filter $fkfilt in channel $C\.}
+^on who - "*"
+^assign -ftbkick
+^assign -fkfilt}
+alias k {if ([$0]) {if ([$1]) {/kkick $C $0 $1-}
+{/kkick $C $0 $pk}
+}{/qq Usage: /k \(nickname\)}}
+alias _saway {@awtime=time()
+^assign awreason $encode($0-)
+//away $ftm($Z) $left(10 $stime($time())) /$decode($awreason)/
+if ([$anncaway]==[ON]) {if ([$savepriv]==[ON]) {^assign tmpa Msgs saved.}
+^assign tmpb is away: /$decode($awreason)/ $tmpa
+//me $tmpb
+^assign -tmpa
+^assign -tmpb}
+if (([$anncaway]==[OFF])||([$C]==0)) {qq You have been set away.}
+_bar 10 Set Away
+^assign iaw YES
+if ([$savepriv]==[ON]) {^exec echo "[$left(10 $stime($time())) $ftm($Z)] Set Away: /$safe($strip(! $decode($awreason)))/ " >> $awayfle}
+@aliasprv=0}
+alias away if ([$0]) {/_saway $0-}{/_sback
+if ([$awtime]) {qq You were away for $tdiff(${[$time()] - awtime})\
+^assign -awtime}}
+alias _sback {^assign iaw NO
+if (([$anncback]==[ON])&&([$C]!=0)) {//me $backmsg}
+if (([$anncback]==[OFF])||([$C]==0)) {qq You have been set back.}
+_bar 10 Welcome Back!
+//away
+if ([$savepriv]==[ON]) {qq You have $aliasprv messages waiting.
+if ([$aliasprv]!=[0]) {qq To read your messages, use /READ.}}}
+alias read {^exec cat $awayfle
+^assign temp $"/*/ Keep saved msg file? "
+if (([$temp]==[n])||([$temp]==[no])) {^on ^exec_error "awayrm *" #
+^exec -name awayrm rm $awayfle
+^wait %awayrm
+^on exec_error - "awayrm *"
+qq Away messages deleted.
+}{/qq Away messages kept.}
+@aliasprv=0
+^assign -temp}
+alias _qvr {if ([$qload]!=[1]) {qq Couldn't find your saved preferences file. Using defaults!}{qq Loaded saved preferences.}}
+alias _ld {eval $decode($0-)}
+alias _lu {eval $0-}
+alias _nc {qq You need to be on a channel to do that.}
+alias _ne {qq You need ircII-EPIC for that to work properly. Sorry.}
+alias rvr ^assign sver $avr
+alias save {^assign _nq 1
+notify
+^assign -_nq
+qq Saving your configuration...
+^on ^window "? vr *" #
+^on ^window "? _l? *" #
+^on ^window "? ?O*" #
+_bar 10 Saving Config
+^on ^exec_error "save *" #
+^exec -name save mv $dorqfile $dorqbak
+wait %save
+^on ^exec_error - "save *"
+^exec -name qsve cat >> $dorqfile
+wait
+^on ^exec_error "qsve *" #
+^wst fileclass DoRq 2.1 Lite
+eval ^wen filestm $time()
+eval ^wen fileusb $ownadd
+eval ^wen sver $sver
+eval ^wen pingmsg $pingmsg
+eval ^wen idms $idms
+eval ^wen pk $pk
+eval ^wen signmsg $signmsg
+eval ^wen backmsg $backmsg
+eval ^wen flood_ok $flood_ok
+eval ^wln $encode(_lu vr usermode $usermode;vr idletime $idletime;vr bandef $bandef;vr dfbt $dfbt)
+eval ^wln $encode(_lu vr mesi $mesi;vr privbeep $privbeep;vr dissolve $dissolve;vr anncaway $anncaway;vr anncback $anncback)
+eval ^wln $encode(_lu vr savepriv $savepriv;vr esound $esound;vr showmotd $showmotd;vr doctcps $doctcps)
+eval ^wln $encode(_lu vr prot $prot;vr flp $flp;vr chanp $chanp;vr autolag $autolag;vr csound $csound;vr splash $splash)
+eval ^wln $encode(_lu vr rstct $rstct;vr ig_count $ig_count;vr m_fc $m_fc;vr k_fc $k_fc;vr msg_fc $msg_fc;vr notice_fc $notice_fc)
+eval ^wln $encode(_lu vr ctcp_fc $ctcp_fc;vr nick_fc $nick_fc;vr igtypes $igtypes;vr verto $verto)
+@notify_size=[$#ntfl]
+@notify_counter=0
+while (notify_counter < notify_size) {@ind=0
+^assign -notify_write
+while (ind < 7) {^assign notify_write $notify_write $word($notify_counter $ntfl)
+@ind=ind + 1
+@notify_counter=notify_counter + 1}
+^wln $encode(NOTIFY $notify_write)}
+@look_size=[$#look]
+@look_counter=0
+while (look_counter < look_size) {@ind=0
+^assign -look_write
+while (ind < 7) {^assign look_write $look_write $word($look_counter $look)
+@ind=ind + 1
+@look_counter=look_counter + 1}
+^wln $encode(LOOK $look_write)}
+^exec -CLOSE %qsve
+wait
+^on ^exec_error - "qsve *"
+^on ^window -"? vr *"
+^on ^window -"? _l? *"
+^on ^window -"? ?O*"
+qq Configuration saved to $dorqfile }
+alias wst {^msg %qsve vr $0 $1-
+wait}
+alias wln {^msg %qsve $decode($0-)
+wait}
+alias wen {^msg %qsve _ld $encode(vr $0-)
+wait}
+alias uhostonly {^assign uhostqtmp $0
+^assign FUNCTION_RETURN $right(${@uhostqtmp-index(! $0)} $0)}
+on ^notify_signon "*" {if (V>19931229) {if (!_n.list) {^timer -refnum 634 4 _mnt}
+^assign _n.list $_n.list $0 }{^assign _n.list $0
+_mnt}}
+alias _mnt {if (_n.list) {userhost $_n.list -cmd if ([$4]!=[<UNKNOWN>]) {
+if ([$2] == [+]) {^assign tvar [-Away-]}{^assign -tvar}
+_db signon
+qq Signon by $0 [$strip(#~\;\$ $3)@$4\] $tvar
+^assign -tvar}}
+^assign -_n.list}
+on ^notify_signoff "*" {_db signoff
+qq Signoff by $0}
+alias rem_w {@_pattern=rmatch($0 $1-) - 1
+if (_pattern != -1) {@FUNCTION_RETURN=notw($_pattern $1-)}
+{@FUNCTION_RETURN=[$1-]}}
+alias notw {if ([$0]) {@_pad=[ ]}
+{@_pad=[]}
+@_words=[$1-]
+@FUNCTION_RETURN=[$leftw($0 $1-)] ## [$_pad] ## [$restw(${[$0]+1} $1-)]}
+alias leftw {@FUNCTION_RETURN=[$(1-$0)]}
+alias restw {@FUNCTION_RETURN=[$(${[$0]+1}-)]}
+alias mw {if (miws) {qq Closing privmsg window
+^assign -miws
+^window refnum Privmsgs
+^window kill Privmsgs}{qq Opening privmsg window
+^assign miws 1
+^window new name Privmsgs
+^window shrink 7
+^window scroll on
+^window goto 2}}
+alias _connect {^assign _server $0 $1
+if ([$ISAWAY]!=[YES]) {//away}
+eval quote MODE $N $usermode}
+alias _host {EVAL userhost $N -CMD if ([$3]) {/EVAL ^assign ownadd $0!$strip(~ $3)@$4}{^timer 20 _host}}
+alias nu {if ([$C]==[0]) {_nc}{_nuz $0-}}
+alias _nuz {if ([$0]==[]) {_nuc}
+@nu.c=[$strip(&# $C)]
+@nu.cs=[$left(1 $C)]
+@nu.ls=[$*]
+if (![$nu.bs[$nu.c][up]]) {_nug $()
+wait -cmd _nus $()} {_nus $()}}
+alias _nus {if (match(clear $nu.ls)) {_nuc} {if ([$match(list $nu.ls)) {_nud $nu.c $()} {IF (STRIP(* $nu.ls) != [$nu.ls]) {cbl2 $nu.bs[$nu.c]
+_nuc $()} {@nu.t1=0
+while (word($nu.t1 $nu.ls) != []) {@nu.t3=word($nu.t1 $nu.ls)
+^assign nu.t2 $nu.t2 $word($nu.t3 $nu.bs[$nu.c])
+@nu.t1=nu.t1 + 1}
+if ([$nu.t1]) {cbl2 $nu.t2 $()} {}}}
+^assign -nu.ls
+^assign -nu.t1
+^assign -nu.t2
+^assign -nu.t3}}
+alias _nud {@nu.t=0
+qq $C Banlist
+while ([$nu.t] <= [$nu.bs[$nu.c][up]]) {if ([$nu.t] != [$nu.bs[$nu.c][up]]) {@nu.b1=word($nu.t $nu.bs[$nu.c])
+@nu.b2=word(${nu.t + 1} $nu.bs[$nu.c])
+qq \($[-2]nu.t\) $[30]nu.b1\  \($[-2]{nu.t + 1}\) $[30]nu.b2\
+@nu.t=nu.t + 2} {@nu.b1=word($nu.t $nu.bs[$nu.c])
+qq \($[-2]nu.t\) $[30]nu.b1\
+@nu.t=nu.t + 1}}
+^assign -nu.b1
+^assign -nu.b2
+^assign -nu.t}
+alias _nug {_nuc
+@nu.t=0
+^on ^367 "*" {^assign nu.bs[$nu.c] $nu.bs[$nu.c] $2
+^assign nu.bs[$nu.c][up] $nu.t
+@nu.t=nu.t + 1}
+mode $nu.cs$nu.c b
+wait -cmd ^on 367 -"*"
+wait -cmd ^assign -nu.a
+wait -cmd _nud $nu.c}
+alias _nuc {^ASSIGN -nu.bs[$nu.c]
+^assign -nu.bs[$nu.c][up]}
+alias signoff {if ([$splash]==[ON]) {^set status_format  Have a nice day! 
+^set status_format1  Thanks for using ircII DoRq. 
+eval ^set status_format2 $status_format}
+if ([$0]) {/echo *** Quit: $N \($0-\)
+timeon
+//signoff $0-}{/echo *** Quit: $N \($signmsg\)
+timeon
+eval //signoff $signmsg}}
+alias cycle {qq Cycling on $C
+^assign tmpchan $C
+//part $C
+cwait //join $tmpchan
+^assign -tmpchan}
+alias siteban {if ([$0]) {userhost $0 -cmd ^assign mach $$4
+wait
+@mach=[$MID($INDEX("." [$mach]) 99 $mach)]
+^assign mm *!*@*.$mach
+if ([$mach]) {drop $mm
+^mode $C +b $mm} {qq Cannot find $0}} {qq Usage: /siteban (nick)}}
+alias chops {if ([$C]==0) {_nc}{^on ^names "*" _gcn $$1-
+^names $C
+wait -cmd ^on names - "*"}}
+alias _gcn {if ([$0]) {if ([$[1]0] == [@]) {if ([$oplist]==[]) {^assign oplist $strip(@ $0)
+_gcn $1-}{^assign oplist $strip(@ $0) $oplist
+_gcn $1-}}{/_gcn $1-}}{if ([$oplist]!=[]) {qq $C Chanops: $oplist 
+^assign -oplist}}}
+alias chanst {if ([$0]) {^assign chnl $0}
+{^assign chnl $C}
+@_ccns=0
+@_ccop=0
+@_cusr=0
+@_cawy=0
+@_cnaw=0
+@_cicp=0
+^assign -_ios
+^on ^who "*" {if (index(@ $2)!=-1) {@_ccop=_ccop + 1}
+{@_cusr=_cusr + 1}
+if (index(H $2)!=-1) {@_cnaw=_cnaw + 1}
+if (index(G $2)!=-1) {@_cawy=_cawy + 1}
+if (index(* $2)!=-1) {@_cicp=_cicp + 1
+^assign _ios $1 ${_ios}}
+@_ccns=_ccns + 1}
+//who $chnl
+cwait givestats}
+alias givestats {^on who - "*"
+qq $chnl Channel Statistics:
+qq Total users: $[6]_ccns    Channel Ops:    $[6]_ccop    Unopped: $_cusr 
+qq Users here:  $[6]_cnaw    Users Set Away: $[6]_cawy    IRC Ops: $_cicp 
+if ([$_ios]!=[]) {/qq IRC Ops Present: \( $_ios\)}{}}
+alias ig {if ([$0]) {if ([$1]) {^assign _qt $1-}
+if (!rmatch($0 *!* *@* *.*)) {userhost $0 -CMD if ([$4]!=[<UNKNOWN>]) {^assign to_ignore *$4
+if ([$_qt]) {//^ignore $to_ignore $_qt}
+{//^ignore $to_ignore $igtypes}
+qq Now ignoring ${BLD}$0 [$3@$4].
+^assign -_qt}{/qq ${BLD}$0 is not on-line.}}{if ([$_qt]) {//^ignore $0 $_qt}
+{//^ignore $0 $igtypes}
+qq Now ignoring ${BLD}$0.
+^assign -_qt}}{/qq Usage: /ig (nick)}}
+alias noig {if ([$0]) {userhost $0 -CMD if ([$4]!=[<UNKNOWN>]) {//^ignore $0 NONE
+//^ignore *@$4 NONE
+qq ${BLD}$0 has been unignored.}{/qq ${BLD}$0 is not on-line.}}{/qq Usage: /noig (nick)}}
+alias finger {^exec -kill %qf
+if ([$0]) {userhost $0 -cmd if ([$3] != [<UNKNOWN>]) {
+qq Fingering $0 \($strip(#~!> $3)@$4\)
+^eval exec -name qf exec finger $strip(#~!> $3)@$$4
+}{/qq Couldn't obtain mask of $0 for finger.}}
+{/qq Usage: /finger (nickname)}}
+alias flip {l $C
+j $0}
+alias net {if ([$0]) {qq Attaching new window to server $0
+^window new
+if ([$1]) {/EVAL window server $0:$1::_$N}{/EVAL window server $0:6667::_$N}}{qq Usage: /net (server) [port]}}
+bind ^W meta2_character 
+bind ^W? parse_command qh win
+bind ^Wh parse_command window hide
+bind ^Wn parse_command window next
+bind ^Wp parse_command window previous
+bind ^Wk parse_command window kill
+bind ^Wl parse_command window list
+bind ^Wc parse_command clear -a
+bind ^Wd parse_command clear
+bind ^Ws parse_command win_show
+bind ^W1 parse_command window goto 1
+bind ^W2 parse_command window goto 2
+bind ^W3 parse_command window goto 3
+bind ^W4 parse_command window goto 4
+bind ^W5 parse_command window goto 5
+bind ^W6 parse_command window goto 6
+bind ^W7 parse_command window goto 7
+bind ^W8 parse_command window goto 8
+bind ^W9 parse_command window goto 9
+alias wn window next
+alias wr window shrink
+alias wg window grow
+alias win_show {^window show 2
+^window show 1
+^window balance}
+alias _csb {^assign ltsb $0-
+_rst}
+alias sfstat {if ([$fileclass]) {qq Saved preferences file from $fileclass\.
+qq Saved by $fileusb\.
+qq Last saved on $stime($filestm)\.}{qq Saved configuration file not loaded/present or from earlier version.}}
+alias status {qq This is $avr
+qq Build date: $qbvr 
+timeon
+qq -------------------------------------------------------------Status-
+qq  Set Away time: $[10]idletime      Default Ban:      $bandef 
+qq  Auto Rejoin:   $[10]rejoin      Ext. Msg Display: $mesi 
+qq  Mass Protect:  $[10]prot      Pers. Flood Prot: $flp 
+qq  Channel Prot:  $[10]chanp      Beep on privmsg:  $privbeep 
+qq  IRC Logging:   $[10]logirc      Dissolve Ban:     $dissolve 
+qq  Announce Away: $[10]anncaway      Announce Back:    $anncback 
+qq  Save Awaymsgs: $[10]savepriv      Do CTCPS:         $doctcps 
+qq  Event Sounds:  $[10]esound      CTCP Sounds:      $csound 
+qq  Show MOTDs:    $[10]showmotd 
+qq --------------------------------------------------------------------}
+alias estatus {qq --------------------------------------------------------Ext. Status-
+qq  Deop:       $[5]m_fc Kick:          $[5]k_fc Nick Flood: $nick_fc 
+qq  Msg Flood:  $[5]msg_fc Notice Flood:  $[5]notice_fc CTCP Flood: $ctcp_fc 
+qq  Timer resets after: $rstct 
+qq  Ignores triggered by floods last $ig_count minutes
+qq  Ignores will stop: $igtypes 
+qq --------------------------------------------------------------------}
+EVAL load $dorqfile
+EVAL _host
+EVAL $srand($time())
+EVAL quote MODE $N $usermode
+EVAL if ([$S]!=[]) {^assign _server $S}
+alias links {^assign -lcounter
+^assign -lserver
+^assign -lclass
+@lcounter=1
+qq  No. Distance                   Server-Uplink
+^on ^364 "*" {^assign lserver $stu($1)
+^assign lclass $3
+^assign llink $stu($2)
+qq \($[-3]lcounter\)  \($[-3]lclass\) $[-25]lserver\ \[$llink\]
+@lcounter=lcounter + 1}
+//links $0
+^on ^365 "*" {^on ^364 -*;^on ^365 -*}}
+alias stu {if ([$right(13 $0)] == [.undernet.org]) {@tmp=left($rindex(. $0) $0)
+@ FUNCTION_RETURN = left($rindex(. $tmp) $tmp)} {@FUNCTION_RETURN=[$0] }}
+alias lformat {@IRCII.word=[$1-]
+if (@IRCII.word < [$0]) {@FUNCTION_RETURN=[$([$0]IRCII.word)] } 
+{@FUNCTION_RETURN=IRCII.word }}
+alias lc quote part $C :$0-
+alias nick quote nick $*
+alias cs msg ChanServ $*
+alias ns msg NickServ $*
+alias ms msg MemoServ $*
+alias dalserv server irc.dal.net
+alias dalwin net irc.dal.net
+on -raw_irc "% PART *" {if ([$3]) {^assign partcmt $mid(1 1024 $3-)}{^assign -partcmt}}
+on ^channel_signoff "* % *" /echo *** Quit: $1 \($2-\)
+on ^leave "*" {if ([$partcmt]) {echo *** $0 parts $1 \($partcmt\)}
+{echo *** $0 parts $1}}
+on ^kick "* % *" /echo *** $0 kicked from $2 by $1 \($3-\)
+on ^mode "*" {/echo *** $0 sets $1: "$2-"}
+on ^topic "*" {if ([$2]) {/echo *** $0 sets $1 topic: "$2-"}
+{/echo *** $0 clears $1 topic}}
+on ^nickname "*" /echo *** $0 is now $1
+alias timeon {qq Online $tdiff(${[$time()] - _ini})\}
+alias _rst {@sbrun=1
+^eval set status_user $ltsb /DoRq/}
+alias _bar if ([$sbrun]==[1]) {@sbrun=2
+^eval set suold $status_user
+^eval set status_user $1- /DoRq/
+eval timer $0 _rst}{@notp=1}
+_fin
+_db welcome
+alias _sm {echo    .____________________________________________________________________.
+echo    | DoRq                                                          Help |
+echo    |                                                                    |
+echo    |                         -= HELP TOPICS =-                          |
+echo    |--------------------------------------------------------------------|
+echo    |     STAT - GEN - CHOP - BAN - WIN - DAL - CONFIG - ETC - INFO      |
+echo    |--------------------------------------------------------------------|
+echo    |   To get help on specific topics, type /QH followed by the topic   |
+echo    `--------------------------------------------------------------------'}
+alias qh {if (match($0 STAT GEN CHOP BAN WIN DAL CONFIG ETC INFO)) {$0hc}{_sm}}
+alias stathc {echo   .______________________________________________________________________.
+echo   | DoRq                                                     Status Help |
+echo   |                                                                      |
+echo   | /STATUS - Shows you your current configuration.                      |
+echo   | /ESTATUS - Shows your extended configuration.                        |
+echo   |                                                                      |
+echo   | The following can be toggled by using ON or OFF after the command:   |
+echo   |  /FLP - Personal flood protection  /PROT - Mass deop/kick protection |
+echo   |  /CHANP - Channel flood protection /MESI - Extended privmsg info     |
+echo   |  /REJOIN - Auto rejoin when kicked /LOG - IRC logging                |
+echo   |  /PRIVBEEP - Privmsg beeping       /DISSOLVE - Auto-drop bans on you |
+echo   |  /ANNCAWAY - Announce your aways   /ANNCBACK - Announce your returns |
+echo   |  /SAVEPRIV - Save away-privmsgs    /AUTOLAG - Status bar Lag-O-Meter |
+echo   |  /DOCTCPS - CTCP notification      /SPLASH - Annoying opening ASCII  |
+echo   |  /SHOWMOTD - Showing of MOTDs      /ESOUND - Play event sounds       |
+echo   |  /CSOUND - Play CTCP sounds                                          |
+echo   |                                                                      |
+echo   | * ESOUND/CSOUND requires "wavplay" and write access to /dev/dsp.     |
+echo   `----------------------------------------------------------------------'}
+alias genhc {echo   .______________________________________________________________________.
+echo   | DoRq                                                    General Help |
+echo   |                                                                      |
+echo   |     /M - Msg       /W - Who              /FLIP - Change channel      |
+echo   |     /N - Notice    /WI - Whois           /SB - Show bans             |
+echo   |     /J - Join      /WW - Whowas          /CHOPS - Show Chanops       |
+echo   |     /L - Leave     /WII - Whois (w/idle) /WS - Who Split             |
+echo   |     /IG - Ignore   /NOIG - Un-ignore     /UMODE - Set usermode       |
+echo   |     /P - Ping      /INV - Invite         /CHANST - Channel Stats     |
+echo   |     /T - Topic     /TC - Clear Topic     /CYCLE - Cycle on Channel   |
+echo   |                                                                      |
+echo   | /DM (x) - Directs last privmsg received to <x>.                      |
+echo   | /DN (x) - Directs last notice received to <x>.                       |
+echo   | /DMW - Directs last privmsg recieved to wallop.                      |
+echo   | /SAVE - Stores personal user configuration.                          |
+echo   | /AWAY (reason) - Sets you away.                                      |
+echo   | /READ - Read your Away Messages.                                     |
+echo   `----------------------------------------------------------------------'}
+alias chophc {echo   .______________________________________________________________________.
+echo   | DoRq                                                     Chanop Help |
+echo   |                                                                      |
+echo   | /OP (nicks) - Gives chanop status to sepcified nicknames.            |
+echo   | /DEOP (nicks) - Removes chanop status from specified nicknames.      |
+echo   | /C (mode) - Sets the mode you specify on current channel.            |
+echo   | /MC - Clears all active channel modes on current channel.            |
+echo   | /NK - Clears current active channel key.                             |
+echo   | /K (nick) (reason) - Kicks (nick) from channel with (reason).        |
+echo   | /FK (hostname) - Kicks all people from (hostname).                   |
+echo   | /FBK (hostname) - Kicks and bans people from (hostname).             |
+echo   | /WALL (message) - Send wallop message to other chanops.              |
+echo   | /BAN (nick) - Ban a user from current channel.                       |
+echo   | /BK (nick) (reason) - Bans and kicks (nick) from current channel.    |
+echo   | /BC - Domain-bans last user to CTCP you or the active channel.       |
+echo   `----------------------------------------------------------------------'}
+alias banhc {echo   .______________________________________________________________________.
+echo   | DoRq                                                        Ban Help |
+echo   |                                                                      |
+echo   | /BAN -x (nick) - Bans (nick) on your current channel. (x = Ban type) |
+echo   | /BAN (filters) - Ban up to three filters on current channel.         |
+echo   | /UNBAN (nick) - Unbans (nick) on your current channel.               |
+echo   | /UNBAN (filter) - Unbans all bans matching (filter) on channel.      |
+echo   | /BK (nick) (reason) - Bans and kicks (nick) with (reason).           |
+echo   | /DROP (filter) - Drops bans matching (filter). Wildcards allowed.    |
+echo   | /SITEBAN (nick) - Drops other bans on (nick)'s site and bans site.   |
+echo   | /PU (placer) - Drops all bans on current channel made by (placer).   |
+echo   | /NU (number) - Drops bans by number. Use without number for banlist. |
+echo   | /BANDEF (n,h,s,d) - Sets default bantype. (See below)                |
+echo   |                                                                      |
+echo   |  N Normal *!*ser@*.dom.area.cty       *!*s?r@*.d??.a???.?ty Screw S  | 
+echo   |  H Host   *!*@host.dom.area.cty       *!*@*.dom.area.cty   Domain D  |
+echo   |                                                                      |
+echo   | * Numerical IP Addresses will be banned correctly.                   |
+echo   `----------------------------------------------------------------------'}
+alias winhc {echo   .______________________________________________________________________.
+echo   | DoRq                                                     Window Help |
+echo   |                                                                      |
+echo   | /NET - Opens new window and attaches it to a server.                 |
+echo   | /WR (n) - Reduces height of active window by (n) lines.              |
+echo   | /WG (n) - Increases height of active window by (n) lines.            |
+echo   | ^W ? - Shows this window help.                                       |
+echo   | ^W K - Kills the currently active window.                            |
+echo   | ^W H - Hides the currently active window.                            |
+echo   | ^W S - Brings all windows to foreground and balances them.           |
+echo   | ^W C - Clears all windows in foreground.                             |
+echo   | ^W D - Clears currently active window.                               |
+echo   | ^W L - Lists all active windows.                                     |
+echo   | ^W P - Goes to previous window. (Must exist in background)           |
+echo   | ^W N - Goes to next window. (Must exist in background)               |
+echo   |                                                                      |
+echo   | * ^W x refers to Control-W followed by whichever function key.       |
+echo   | * Control-W followed by a number from 1 to 9 will go to that window. | 
+echo   | * The /NET command must be followed with a servername.               |
+echo   `----------------------------------------------------------------------'}
+alias dalhc {echo   .______________________________________________________________________.
+echo   | DoRq                                                     DALnet Help |
+echo   |                                                                      |
+echo   | /CS - Send a message to the Channel Registration Service.            |
+echo   | /NS - Send a message to the Nickname Registration Service.           |
+echo   | /MS - Send a message to the Memo Service.                            |
+echo   | /LC (comment) - Leave current channel with comment attached.         |
+echo   | /NICK (newnick) - Change nickname. (Support for 30 character nicks)  |
+echo   | /DALSERV - Switch to a DALnet server.                                |
+echo   | /DALWIN - Create new DALnet window.                                  |
+echo   |                                                                      |
+echo   | * These commands are for use on DALnet only.                         |
+echo   `----------------------------------------------------------------------'}
+alias confighc {echo   .______________________________________________________________________.
+echo   | DoRq                                                   Configuration |
+echo   |                                                                      |
+echo   | /CVERSION - Changes your CTCP VERSION reply.                         |
+echo   | /CPING - Changes your CTCP PING notice reply.                        |
+echo   | /CFLOODM - Changes the notice sent to people who flood you.          |
+echo   | /CIDLE - Changes away msg for auto-away on idle.                     |
+echo   | /CSIGN - Changes the signoff message. \(Used when you /QUIT\)          |
+echo   | /CUMODE - Changes your default usermode. \(Automatic /UMODE\)          |
+echo   | /CBACK - Changes your return-from-away action.                       |
+echo   | /CATIME - Changes your auto-away time.                               |
+echo   | /CKMSG - Changes your default /KICK comment.                         |
+echo   | /CFCTCP - Changes consecutive CTCPs recieved to qualify as a flood.  |
+echo   | /CFTIME - Changes how long flood-induced ignores last.               |
+echo   | /CFRST - Changes how long before flood timer resets.                 |
+echo   | /CVERTO - Changes version timeout threshold.                         |
+echo   `----------------------------------------------------------------------'}
+alias etchc {echo   .______________________________________________________________________.
+echo   | DoRq                                                       Etc. Help |
+echo   |                                                                      |
+echo   | /LINKS - Lists servers and their connections to each other.          |
+echo   | /TIMEON - Shows how long you have been running this script.          |
+echo   | /VER (nick) - Requests version info from (nick).                     |
+echo   | /FOK (nick) - Adds a nickname to your flood ok list.                 |
+echo   | /FREM (nick) - Removes a nickname from your flood ok list.           |
+echo   | /LOOK (word) - Adds a word to your Look list. \(Indicates detection\)  |
+echo   | /RLOOK (word) - Removes a word from your Look list.                  |
+echo   | /FINGER (nick) - UNIX fingers the nickname you specify.              |
+echo   | /SOUND - Provides some compatibility with that oddball mIRC command. |
+echo   | /MW - Opens/Closes seperate window for incoming private messages.    |
+echo   | /JI - Joins the last channel you were invited to.                    |
+echo   | [TAB] - Cycle through nicks that have sent you privmsgs.             |
+echo   | CTRL-W - Controls all the Windowing functions. Type ^W? for help.    |
+echo   | CTRL-F - Flushes all pending server output.                          |
+echo   | CTRL-Y - Toggles screen hold mode.                                   |
+echo   `----------------------------------------------------------------------'}
+alias infohc {echo   .______________________________________________________________________.
+echo   | DoRq                                                     Information |
+echo   |                                                                      |
+echo   | This is a stripped-down version of ircII DoRq 2.1 that is compatible |
+echo   | with non-EPIC3 clients.                                              |
+echo   |                                                                      |
+echo   | ircII DoRq is maintained by StRoBe <douglas@min.net>                 |
+echo   | Visit the DoRq homepage at http://www.min.net/~douglas/dorq          |
+echo   `----------------------------------------------------------------------'}
+### EOF 2.1 Lite
